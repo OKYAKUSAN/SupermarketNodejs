@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <link type="text/css" rel="stylesheet" href="/static/css/admin_master.css" />
+        <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+        <title></title>
+    </head>
+    <body>
+        <form id="form1" action="/transaction/stocksend.html" method="post" target="rightFrame">
+        <div class="p30">
+            <div class="breadCrumb">
+                <a href="/home.html" target="rightFrame">首页</a>&nbsp;&nbsp;&gt;&nbsp;&nbsp;<a href="/transaction/stocklist.html" target="rightFrame">进货管理</a>&nbsp;&nbsp;&gt;&nbsp;&nbsp;<span>进货编辑</span>
+            </div>
+    
+            <div class="mt10">
+                <input type="hidden" id="stockId" name="stockId" value=<%= data.Stock_Id>0?data.Stock_Id:0 %> />
+                <% if(data.Stock_Id>0) {%>
+                    <input type="hidden" id="stockNumber" name="stockNumber" value=<%= data.Stock_Number %> />
+                    <input type="hidden" id="sortIdHidden" name="sortIdHidden" value=<%= data.Sort_Id %> />
+                    <input type="hidden" id="goodsIdHidden" name="goodsIdHidden" value=<%= data.Goods_Id %> />
+                    <input type="hidden" id="stockPriceHidden" name="stockPriceHidden" value=<%= data.Stock_Price %> />
+                    <input type="hidden" id="stockCountHidden" name="stockCountHidden" value=<%= data.Stock_Count %> />
+                    <input type="hidden" id="stockUnitHidden" name="stockUnitHidden" value=<%= data.Stock_Unit %> />
+                    <input type="hidden" id="stockDateYearHidden" name="stockDateYearHidden" value=<%= data.Stock_Date.getFullYear() %> />
+                    <input type="hidden" id="stockDateMonthHidden" name="stockDateMonthHidden" value=<%= data.Stock_Date.getMonth() %> />
+                    <input type="hidden" id="stockDateDayHidden" name="stockDateDayHidden" value=<%= data.Stock_Date.getDate() %> />
+                    <input type="hidden" id="stockDateHoursHidden" name="stockDateHoursHidden" value=<%= data.Stock_Date.getHours() %> />
+                    <input type="hidden" id="stockDateMinutesHidden" name="stockDateMinutesHidden" value=<%= data.Stock_Date.getMinutes() %> />
+                    <input type="hidden" id="stockDateSecondsHidden" name="stockDateSecondsHidden" value=<%= data.Stock_Date.getSeconds() %> />
+                <% } %>
+                <table class="formTable">
+                    <colgroup>
+                        <col style="width:150px;" />
+                        <col style="width:auto;" />
+                    </colgroup>
+                    <tr class="tbg0"><th colspan="2">进货信息</th></tr>
+                    <tr>
+                        <th class="tr">商品名称</th>
+                        <td>
+                            <div class="formList">
+                                <div class="formItem">
+                                    <div class="formItem-select transactionGoods">
+                                        <select id="formSortId" name="formSortId">
+                                            <option value="">请选择</option>
+                                            <% sortList.forEach(function(item){ %>
+                                                <option value=<%= item.Sort_Id %>><%= item.Sort_Name %></option>
+                                            <% }) %>
+                                        </select>
+                                        <select id="formGoodsId" name="formGoodsId" disabled="disabled">
+                                            <option price="" value="">-</option>
+                                            <% goodsList.forEach(function(item){ %>
+                                                <option price=<%= item.Goods_Price %> value=<%= item.Goods_Id %> sortTag=<%= item.Goods_Sort %>><%= item.Goods_Name %></option>
+                                            <% }) %>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="formMsg">请选择商品名称</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tr">单价</th>
+                        <td>
+                            <div class="formList">
+                                <div class="formItem">
+                                    <div class="formItem-text">
+                                        <input type="text" id="formStockPrice" name="formStockPrice" placeholder="请输入价格" value="" />
+                                    </div>
+                                </div>
+                                <div class="formMsg">请输入价格</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tr">数量</th>
+                        <td>
+                            <div class="formList">
+                                <div class="formItem">
+                                    <div class="formItem-text">
+                                        <input type="text" id="formStockCount" name="formStockCount" placeholder="请输入数量" value="" />
+                                    </div>
+                                </div>
+                                <div class="formMsg">请输入数量</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tr">单位</th>
+                        <td>
+                            <div class="formList">
+                                <div class="formItem">
+                                    <div class="formItem-select">
+                                        <select id="formStockUnit" name="formStockUnit">
+                                            <option value="">请选择</option>
+                                            <option value="箱">箱</option>
+                                            <option value="件">件</option>
+                                            <option value="条">条</option>
+                                            <option value="包">包</option>
+                                            <option value="瓶">瓶</option>
+                                            <option value="袋">袋</option>
+                                            <option value="个">个</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="formMsg">请选择单位</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tr">销售日期</th>
+                        <td>
+                            <div class="formList">
+                                <div class="formItem">
+                                    <div class="formItem-select transactionSelct">
+                                        <div><select id="formStockYear" name="formStockYear"><option value="">请选择</option></select><span>年</span></div>
+                                        <div><select id="formStockMonth" name="formStockMonth" disabled="disabled"><option value="">-</option></select><span>月</span></div>
+                                        <div><select id="formStockDay" name="formStockDay" disabled="disabled"><option value="">-</option></select><span>日</span></div>
+                                        <div><select id="formStockHours" name="formStockHours"><option value="">请选择</option></select><span>时</span></div>
+                                        <div><select id="formStockMinutes" name="formStockMinutes"><option value="">请选择</option></select><span>分</span></div>
+                                        <div><select id="formStockSecond" name="formStockSecond"><option value="">请选择</option></select><span>秒</span></div>
+                                    </div>
+                                </div>
+                                <div class="formMsg">请选择时间</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <td class="formTableBtn"><input type="submit" id="formSubmit" value="提交" /><input type="button" onclick="javascript:window.location='/transaction/stocklist.html'" value="返回" /></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <script type="text/javascript">
+            $(function () {
+                var formSortId = $("#formSortId");
+                var formGoodsId = $("#formGoodsId");
+                var formStockPrice = $("#formStockPrice");
+                var formStockCount = $("#formStockCount");
+                var formStockUnit = $("#formStockUnit");
+                var formStockYear = $("#formStockYear");
+                var formStockMonth = $("#formStockMonth");
+                var formStockDay = $("#formStockDay");
+                var formStockHours = $("#formStockHours");
+                var formStockMinutes = $("#formStockMinutes");
+                var formStockSecond = $("#formStockSecond");
+    
+                formGoodsId.children(":gt(0)").hide();
+                formSortId.change(function () {
+                    var selectValue = $(this).val();
+                    formGoodsId.children("option[selected='selected']").removeAttr("selected");
+                    formGoodsId.children(":first").attr("selected", "selected");
+                    formGoodsId.children(":gt(0)").hide();
+                    if (selectValue != "") {
+                        formGoodsId.removeAttr("disabled");
+                        formGoodsId.children("option[sortTag='" + selectValue + "']").show();
+                    } else formGoodsId.attr("disabled", "disabled");
+                });
+                formGoodsId.change(function () {
+                    var price;
+                    var id = $(this).val();
+                    formGoodsId.children(":gt(0)").each(function () {
+                        if ($(this).attr("value") == id) price = $(this).attr("price");
+                    });
+                    formStockPrice.val(price);
+                });
+                formStockPrice.blur(function () {
+                    var value = parseFloat($(this).val());
+                    $(this).val(value.toFixed(2));
+                });
+                formStockCount.blur(function () {
+                    var value = parseInt($(this).val());
+                    if (isNaN(value)) $(this).val("");
+                    else $(this).val(value);
+                });
+                var currentTime = new Date();
+                var currentYear = currentTime.getFullYear();
+                for (var i = 2018; i <= currentYear; i++) {
+                    formStockYear.append("<option value='" + i + "'>" + i + "</option>");
+                }
+                for (var j = 1; j <= 12; j++) {
+                    formStockMonth.append("<option value='" + j + "'>" + j + "</option>");
+                }
+                for (var k = 1; k <= 31; k++) {
+                    formStockDay.append("<option value='" + k + "'>" + k + "</option>");
+                }
+                for (var l = 0; l < 24; l++) {
+                    formStockHours.append("<option value='" + l + "'>" + l + "</option>");
+                }
+                for (var m = 0; m < 60; m++) {
+                    formStockMinutes.append("<option value='" + m + "'>" + m + "</option>");
+                }
+                for (var n = 0; n < 60; n++) {
+                    formStockSecond.append("<option value='" + n + "'>" + n + "</option>");
+                }
+                var year;
+                formStockYear.change(function () {
+                    year = $(this).val();
+                    formStockDay.children("option[selected='selected']").removeAttr("selected");
+                    formStockDay.children(":first").attr("selected", "selected");
+                    formStockDay.children(":gt(0)").hide();
+                    formStockDay.attr("disabled", "disabled");
+                    formStockMonth.children("option[selected='selected']").removeAttr("selected");
+                    formStockMonth.children(":first").attr("selected", "selected");
+                    formStockMonth.children(":gt(0)").hide();
+                    if (year != "") {
+                        formStockMonth.children(":gt(0)").show();
+                        formStockMonth.removeAttr("disabled");
+                    } else {
+                        formStockMonth.attr("disabled", "disabled");
+                    }
+                });
+                formStockMonth.change(function () {
+                    var month = $(this).val();
+                    var leapyear = true;
+                    formStockDay.children("option[selected='selected']").removeAttr("selected");
+                    formStockDay.children(":first").attr("selected", "selected");
+                    formStockDay.children(":gt(0)").hide();
+                    if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
+                        formStockDay.children(":gt(0)").show();
+                        formStockDay.removeAttr("disabled");
+                    } else if (month == 4 || month == 6 || month == 9 || month == 11) {
+                        formStockDay.children(":lt(31)").show();
+                        formStockDay.removeAttr("disabled");
+                    } else if (month == 2) {
+                        if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) leapyear = true;
+                        else leapyear = false;
+                        if (leapyear) {
+                            formStockDay.children(":lt(30)").show();
+                            formStockDay.removeAttr("disabled");
+                        } else {
+                            formStockDay.children(":lt(29)").show();
+                            formStockDay.removeAttr("disabled");
+                        }
+                    } else formStockDay.attr("disabled", "disabled");
+                });
+    
+                $("#formSubmit").click(function () {
+                    var submit = true;
+                    if (formGoodsId.val() == "") {
+                        formGoodsId.parents(".formItem").next().show();
+                        submit = false;
+                    } else formGoodsId.parents(".formItem").next().hide();
+                    if (formStockPrice.val() == "") {
+                        formStockPrice.parents(".formItem").next().show();
+                        submit = false;
+                    } else formStockPrice.parents(".formItem").next().hide();
+                    if (formStockCount.val() == "") {
+                        formStockCount.parents(".formItem").next().show();
+                        submit = false;
+                    } else formStockCount.parents(".formItem").next().hide();
+                    if (formStockUnit.val() == "") {
+                        formStockUnit.parents(".formItem").next().show();
+                        submit = false;
+                    } else formStockUnit.parents(".formItem").next().hide();
+                    if (formStockDay.val() == "" || formStockHours.val() == "" || formStockMinutes.val() == "" || formStockSecond.val() == "") {
+                        formStockDay.parents(".formItem").next().show();
+                        submit = false;
+                    } else formStockDay.parents(".formItem").next().hide();
+                    return submit;
+                });
+                
+                if($("#stockId").val()>0){
+                    var dal_sortId=parseInt($("#sortIdHidden").val());
+                    var dal_goodsId=parseInt($("#goodsIdHidden").val());
+                    var dal_stockPrice=parseFloat($("#stockPriceHidden").val());
+                    var dal_stockCount=parseInt($("#stockCountHidden").val());
+                    var dal_stockUnit=$("#stockUnitHidden").val();
+                    var dal_stockDateYear=parseInt($("#stockDateYearHidden").val());
+                    var dal_stockDateMonth=parseInt($("#stockDateMonthHidden").val())+1;
+                    var dal_stockDateDay=parseInt($("#stockDateDayHidden").val());
+                    var dal_stockDateHour=parseInt($("#stockDateHoursHidden").val());
+                    var dal_stockDateMinute=parseInt($("#stockDateMinutesHidden").val());
+                    var dal_stockDateSecond=parseInt($("#stockDateSecondsHidden").val());
+                    var dal_stockDate=new Date(dal_stockDateYear,dal_stockDateMonth-1,dal_stockDateDay,dal_stockDateHour,dal_stockDateMinute,dal_stockDateSecond);
+                    formSortId.children(":gt(0)").each(function(){
+                        //console.log($(this).val());
+                        if($(this).val()==dal_sortId) {
+                            $(this).attr("selected","selected");
+                            formGoodsId.removeAttr("disabled");
+                            formGoodsId.children("option[sortTag='"+dal_sortId+"']").show();
+                            formGoodsId.children(":gt(0)").each(function(){
+                                if($(this).val()==dal_goodsId) $(this).attr("selected","selected");
+                            });
+                        }
+        
+                    });
+                    formStockPrice.val(dal_stockPrice.toFixed(2));
+                    formStockCount.val(dal_stockCount);
+                    formStockUnit.val(dal_stockUnit);
+                    formStockYear.val(dal_stockDateYear);
+                    formStockMonth.removeAttr("disabled");
+                    formStockMonth.val(dal_stockDateMonth);
+                    var runnian=true;
+                    if (dal_stockDateMonth == 1 || dal_stockDateMonth == 3 || dal_stockDateMonth == 5 || dal_stockDateMonth == 7 || dal_stockDateMonth == 8 || dal_stockDateMonth == 10 || dal_stockDateMonth == 12) {
+                        formStockDay.children(":gt(0)").show();
+                        formStockDay.removeAttr("disabled");
+                    } else if (dal_stockDateMonth == 4 || dal_stockDateMonth == 6 || dal_stockDateMonth == 9 || dal_stockDateMonth == 11) {
+                        formStockDay.children(":lt(31)").show();
+                        formStockDay.removeAttr("disabled");
+                    } else if (dal_stockDateMonth == 2) {
+                        if ((dal_stockDateYear % 4 == 0 && dal_stockDateYear % 100 != 0) || dal_stockDateYear % 400 == 0) runnian = true;
+                        else runnian = false;
+                        if (runnian) {
+                            formStockDay.children(":lt(30)").show();
+                            formStockDay.removeAttr("disabled");
+                        } else {
+                            formStockDay.children(":lt(29)").show();
+                            formStockDay.removeAttr("disabled");
+                        }
+                    }
+                    formStockDay.val(dal_stockDateDay);
+                    formStockHours.val(dal_stockDateHour);
+                    formStockMinutes.val(dal_stockDateMinute);
+                    formStockSecond.val(dal_stockDateSecond);
+                }
+            });
+        </script>
+        </form>
+    </body>
+</html>

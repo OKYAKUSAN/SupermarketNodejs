@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <link type="text/css" rel="stylesheet" href="/static/css/admin_master.css" />
+        <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+        <title></title>
+    </head>
+    <body>
+        <div class="p30">
+            <div class="breadCrumb">
+                <a href="/home.html" target="rightFrame">首页</a>&nbsp;&nbsp;&gt;&nbsp;&nbsp;<span>商品管理</span>
+            </div>
+            <div class="listTable-topControl">
+                <a href="/basic/goodsedit.html" target="rightFrame">添加商品</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+            </div>
+            <div class="listTable mt10">
+                <table>
+                    <colgroup>
+                        <col style="width:25%;" />
+                        <col style="width:15%;" />
+                        <col style="width:15%;" />
+                        <col style="width:15%;" />
+                        <col style="width:15%;" />
+                        <col style="width:15%;" />
+                    </colgroup>
+                    <tr class="tbg0">
+                        <th>名称</th><th>分类</th><th>默认售价(元)</th><th>默认成本(元)</th><th>是否在售</th><th>操作</th>
+                    </tr>
+                    <% var bg = true %>
+                    <% data.forEach(function(item){ %>
+                        <tr class=<%= bg?"tbg1":"tbg2" %>>
+                            <td><%= item.Goods_Name %></td>
+                            <td><%= item.Sort_Name %></td>
+                            <td><%= item.Goods_Price.toFixed(2) %></td>
+                            <td><%= item.Goods_Cost.toFixed(2) %></td>
+                            <td><%= item.Goods_Onsale?"是":"否" %></td>
+                            <td><a href="/basic/goodsedit.html?goodsId=<%= item.Goods_Id %>" target="rightFrame">编辑</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="/basic/goodsdelete.html?goodsId=<%= item.Goods_Id %>" target="rightFrame" onclick="javascript:return confirm('确定要删除吗？')">删除</a></td>
+                        </tr>
+                        <% bg=!bg %>
+                    <% }) %>
+                </table>
+            </div>
+            <%- numControl %>
+        </div>
+        <script type="text/javascript">
+            $(function () {
+                $(".listTable tr:gt(0)").mouseenter(function () {
+                    $(this).addClass("tbg3");
+                }).mouseleave(function () {
+                    $(this).removeClass("tbg3");
+                });
+            });
+        </script>
+    </body>
+</html>

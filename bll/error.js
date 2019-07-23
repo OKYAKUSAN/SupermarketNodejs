@@ -1,0 +1,9 @@
+module.exports={
+    error:function(err,reqUrl){
+        console.log("==========");
+        console.log(Date());
+        console.log("请求地址："+reqUrl);
+        console.log("error:"+err.message);
+        console.log("==========");
+    }
+}

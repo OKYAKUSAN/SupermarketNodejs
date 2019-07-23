@@ -1,0 +1,13 @@
+module.exports={
+    cookieSecret:"This_is_my_first_cookie_object!",
+    dbConfig:{
+        user:'sa',
+        password:'MSSql',
+        server:'PPTV3-20181225X\\SQLSERVER2008',
+        database:'SupermarketServer'
+    },
+    user:{
+        id:"OKYAKUSAN",
+        pwd:"wyz1987"
+    }
+}

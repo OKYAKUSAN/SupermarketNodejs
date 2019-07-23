@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <link type="text/css" rel="stylesheet" href="/static/css/admin_master.css" />
+        <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+        <title></title>
+    </head>
+    <body>
+        <div class="p30">
+            <div class="breadCrumb">
+                <a href="/home.html" target="rightFrame">首页</a>&nbsp;&nbsp;&gt;&nbsp;&nbsp;<span>销售管理</span>
+            </div>
+    
+            <div class="listTable-topControl">
+                <a href="/transaction/stockedit.html" target="rightFrame">添加进货记录</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+            </div>
+            <div class="listTable mt10">
+                <table>
+                    <colgroup>
+                        <col style="width:15%;" />
+                        <col style="width:20%;" />
+                        <col style="width:10%;" />
+                        <col style="width:10%;" />
+                        <col style="width:10%;" />
+                        <col style="width:10%;" />
+                        <col style="width:15%;" />
+                        <col style="width:10%;" />
+                    </colgroup>
+                    <tr class="tbg0">
+                        <th>单号</th><th>商品名称</th><th>分类</th><th>单价(元)</th><th>数量</th><th>单位</th><th>进货时间</th><th>操作</th>
+                    </tr>
+                    <% var bg = true;
+                       if(data.length>0){
+                        data.forEach(function(item){ %>
+                            <tr class=<%= bg?"tbg1":"tbg2" %>>
+                                <td><%= item.Stock_Number %></td>
+                                <td><%= item.Goods_Name %></td>
+                                <td><%= item.Sort_Name %></td>
+                                <td><%= item.Stock_Price.toFixed(2) %></td>
+                                <td><%= item.Stock_Count %></td>
+                                <td><%= item.Stock_Unit %></td>
+                                <td>
+                                    <%
+                                        var dateObj=item.Stock_Date;
+                                        var time="";
+                                        time+=dateObj.getFullYear()+"-";
+                                        time+=dateObj.getMonth()<9?"0"+(dateObj.getMonth()+1):(dateObj.getMonth()+1);
+                                        time+="-";
+                                        time+=dateObj.getDate()<10?"0"+dateObj.getDate():dateObj.getDate();
+                                        time+=" ";
+                                        time+=dateObj.getHours()<10?"0"+dateObj.getHours():dateObj.getHours();
+                                        time+=":";
+                                        time+=dateObj.getMinutes()<10?"0"+dateObj.getMinutes():dateObj.getMinutes();
+                                        time+=":";
+                                        time+=dateObj.getSeconds()<10?"0"+dateObj.getSeconds():dateObj.getSeconds();
+                                    %>
+                                    <%= time %>
+                                </td>
+                                <td><a href="/transaction/stockedit.html?stockId=<%= item.Stock_Id %>" target="rightFrame">编辑</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="/transaction/stockdelete.html?stockId=<%= item.Stock_Id %>" target="rightFrame" onclick="javascript:return confirm('确定要删除吗？')">删除</a></td>
+                            </tr>
+                            <% bg=!bg
+                        });
+                       }else{ %>
+                        <tr class="tbg1"><td colspan="8">暂无记录</td></tr>
+                    <% } %>
+                </table>
+            </div>
+            <%- numControl %>
+        </div>
+        <script type="text/javascript">
+            $(function () {
+                $(".listTable tr:gt(0)").mouseenter(function () {
+                    $(this).addClass("tbg3");
+                }).mouseleave(function () {
+                    $(this).removeClass("tbg3");
+                });
+            });
+        </script>
+    </body>
+</html>

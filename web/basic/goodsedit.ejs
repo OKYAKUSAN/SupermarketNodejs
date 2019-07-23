@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <link type="text/css" rel="stylesheet" href="/static/css/admin_master.css" />
+        <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+        <title></title>
+    </head>
+    <body>
+        <form id="form1" action="/basic/goodssend.html" method="post" target="rightFrame">
+        <div class="p30">
+            <div class="breadCrumb">
+                <a href="/home.html" target="rightFrame">首页</a>&nbsp;&nbsp;&gt;&nbsp;&nbsp;<a href="/basic/goodslist.html" target="rightFrame">商品管理</a>&nbsp;&nbsp;&gt;&nbsp;&nbsp;<span>商品编辑</span>
+            </div>
+    
+            <div class="mt10">
+                <input type="hidden" id="goodsId" name="goodsId" value="<%= data.Goods_Id>0?data.Goods_Id:0 %>" />
+                <% if(data.Goods_Id>0) {%>
+                    <input type="hidden" id="goodsNameHidden" name="goodsNameHidden" value="<%= data.Goods_Name %>" />
+                    <input type="hidden" id="sortIdHidden" name="sortIdHidden" value=<%= data.Goods_Sort %> />
+                    <input type="hidden" id="goodsPriceHidden" name="goodsPriceHidden" value=<%= data.Goods_Price %> />
+                    <input type="hidden" id="goodsCostHidden" name="goodsCostHidden" value=<%= data.Goods_Cost %> />
+                    <input type="hidden" id="goodsOnsaleHidden" name="goodsOnsaleHidden" value=<%= data.Goods_Onsale?1:0 %> />
+                <% } %>
+                <table class="formTable">
+                    <colgroup>
+                        <col style="width:150px;" />
+                        <col style="width:auto;" />
+                    </colgroup>
+                    <tr class="tbg0"><th colspan="2">商品信息</th></tr>
+                    <tr>
+                        <th class="tr">商品名称</th>
+                        <td>
+                            <div class="formList">
+                                <div class="formItem">
+                                    <div class="formItem-text">
+                                        <input type="text" id="formGoodsName" name="formGoodsName" placeholder="请输入分类名称" value="" />
+                                    </div>
+                                </div>
+                                <div class="formMsg">请输入商品名称</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tr">所属分类</th>
+                        <td>
+                            <div class="formList">
+                                <div class="formItem">
+                                    <div class="formItem-select">
+                                        <select id="formSortId" name="formSortId">
+                                            <option value="">请选择</option>
+                                            <% sortList.forEach(function(item){ %>
+                                                <option value="<%= item.Sort_Id %>"><%= item.Sort_Name %></option>
+                                            <% }) %>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="formMsg">请选择分类</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tr">默认售价（元）</th>
+                        <td>
+                            <div class="formList">
+                                <div class="formItem">
+                                    <div class="formItem-text">
+                                        <input type="text" id="formGoodsPrice" name="formGoodsPrice" placeholder="请输入默认售价" value="0.00" />
+                                    </div>
+                                </div>
+                                <div class="formMsg">请输入商品售价</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tr">默认进价（元）</th>
+                        <td>
+                            <div class="formList">
+                                <div class="formItem">
+                                    <div class="formItem-text">
+                                        <input type="text" id="formGoodsCost" name="formGoodsCost" placeholder="请输入默认进价" value="0.00" />
+                                    </div>
+                                </div>
+                                <div class="formMsg">请输入商品进价</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tr">是否在售</th>
+                        <td>
+                            <div class="formList">
+                                <div class="formItem">
+                                    <div class="formItem-radio">
+                                        <div>
+                                            <input type="radio" id="formGoodsOnsaleTrue" name="formGoodsOnsale" value="1" />
+                                            <label for="formGoodsOnsaleTrue">是</label>
+                                        </div>
+                                        <div>
+                                            <input type="radio" id="formGoodsOnsaleFalse" name="formGoodsOnsale" value="0" />
+                                            <label for="formGoodsOnsaleFalse">否</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <td class="formTableBtn"><input type="submit" id="formSubmit" value="提交" /><input type="button" onclick="javascript:window.location='/basic/goodslist.html'" value="返回" /></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <script type="text/javascript">
+            $(function () {
+                var goodsName = $("#formGoodsName");
+                var sortId = $("#formSortId");
+                var goodsPrice = $("#formGoodsPrice");
+                var goodsCost = $("#formGoodsCost");
+                //var goodsOnsale = $("#formGoodsOnsale");
+                var goodsOnsaleTrue = $("#formGoodsOnsaleTrue");
+                var goodsOnsaleFalse = $("#formGoodsOnsaleFalse");
+                
+                if($("#goodsId").val()>0){
+                 var _goodsName = $("#goodsNameHidden").val();
+                 var _sortId = $("#sortIdHidden").val();
+                 var _goodsPrice = $("#goodsPriceHidden").val();
+                 var _goodsCost = $("#goodsCostHidden").val();
+                 var _goodsOnsale =$("#goodsOnsaleHidden").val()==1?true:false;
+                 goodsName.val(_goodsName);
+                 /*
+                 sortId.find("option:gt(0)").each(function(){
+                    if($(this).val()==_sortId) $(this).attr("selected","selected");
+                 });
+                 */
+                sortId.val(_sortId);
+                 goodsPrice.val(parseFloat(_goodsPrice).toFixed(2));
+                 goodsCost.val(parseFloat(_goodsCost).toFixed(2));
+                 if(_goodsOnsale) goodsOnsaleTrue.attr("checked","checked");
+                 else goodsOnsaleFalse.attr("checked","checked");
+                
+                }
+    
+                goodsPrice.blur(function () {
+                    var value = parseFloat($(this).val()).toFixed(2);
+                    if (!isNaN(value)) $(this).val(value);
+                    else $(this).val("0.00");
+                });
+                goodsCost.blur(function () {
+                    var value = parseFloat($(this).val()).toFixed(2);
+                    if (!isNaN(value)) $(this).val(value);
+                    else $(this).val("0.00");
+                });
+    
+                $("#formSubmit").click(function () {
+                    var submit = true;
+                    if (goodsName.val() == "") {
+                        goodsName.parents(".formItem").next().show();
+                        submit = false;
+                    } else goodsName.parents(".formItem").next().hide();
+                    if (sortId.val() == "") {
+                        sortId.parents(".formItem").next().show();
+                        submit = false;
+                    } else sortId.parents(".formItem").next().hide();
+                    return submit;
+                });
+            });
+        </script>
+        </form>
+    </body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <link type="text/css" rel="stylesheet" href="/static/css/admin_master.css" />
+        <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+        <title></title>
+    </head>
+    <body>
+        <form id="form1" action="/basic/sortsend.html" method="post" target="rightFrame">
+        <div class="p30">
+            <div class="breadCrumb">
+                <a href="/home.html" target="rightFrame">首页</a>&nbsp;&nbsp;&gt;&nbsp;&nbsp;<a href="/basic/sortlist.html" target="rightFrame">分类管理</a>&nbsp;&nbsp;&gt;&nbsp;&nbsp;<span>分类编辑</span>
+            </div>
+    
+            <div class="mt10">
+                <input type="hidden" id="sortId" name="sortId" value="<%= data.Sort_Id>0?data.Sort_Id:0 %>" />
+                <table class="formTable">
+                    <colgroup>
+                        <col style="width:150px;" />
+                        <col style="width:auto;" />
+                    </colgroup>
+                    <tr class="tbg0"><th colspan="2">分类信息</th></tr>
+                    <tr>
+                        <th class="tr">名称</th>
+                        <td>
+                            <div class="formList">
+                                <div class="formItem">
+                                    <div class="formItem-text">
+                                        <input type="text" id="formSortName" name="formSortName" placeholder="请输入分类名称" value="" />
+                                    </div>
+                                </div>
+                                <div class="formMsg">请输入分类名称</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <td class="formTableBtn"><input type="submit" id="formSubmit" value="提交" /><input type="button" onclick="javascript:window.location='/basic/sortlist.html'" value="返回" /></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <script type="text/javascript">
+            $(function () {
+                var sortName = $("#formSortName");
+                sortName.val("<%= data.Sort_Name %>");
+                $("#formSubmit").click(function () {
+                    var submit = true;
+                    if (sortName.val() == "") {
+                        sortName.parents(".formItem").next().show();
+                        submit = false;
+                    } else sortName.parents(".formItem").next().hide();
+                    return submit;
+                });
+            });
+        </script>
+        </form>
+    </body>
+</html>

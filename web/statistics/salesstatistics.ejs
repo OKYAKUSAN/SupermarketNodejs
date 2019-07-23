@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <link type="text/css" rel="stylesheet" href="/static/css/admin_master.css" />
+        <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+        <script type="text/javascript" src="/static/js/highcharts-1.js"></script>
+        <script type="text/javascript" src="/static/js/common.js"></script>
+        <title></title>
+    </head>
+    <body>
+        <div class="p30">
+            <div class="breadCrumb">
+                <a href="/home.html" target="rightFrame">首页</a>&nbsp;&nbsp;&gt;&nbsp;&nbsp;<span><%= type==0||type==1?"销售统计":"采购统计" %></span>
+            </div>
+
+            <div class="tab">
+                <%
+                if(type==0||type==1){
+                %>
+                <a href="/statistics/salesstatistics.html" target="rightFrame" class="<%= type==0?'sel':'' %>">销售额</a>
+                <a href="/statistics/salecountstatistics.html" target="rightFrame" class="<%= type==0?'':'sel' %>">销售量</a>
+                <%
+                }else{
+                %>
+                <a href="/statistics/stockstatistics.html" target="rightFrame" class="<%= type==2?'sel':'' %>">采购额</a>
+                <a href="/statistics/stockcountstatistics.html" target="rightFrame" class="<%= type==2?'':'sel' %>">采购量</a>
+                <%}%>
+            </div>
+            
+            <div class="filter">
+                <div class="filter-form">
+                    <div class="filter-form-select"><select id="searchYear"><option value="">请选择</option></select><span>年</span></div>
+                    <div class="filter-form-select"><select id="searchMonth" disabled="disabled"><option value="">-</option></select><span>月</span></div>
+                    <div class="filter-form-select"><select id="searchDate" disabled="disabled"><option value="">-</option></select><span>日</span></div>
+                </div>
+                <div class="filter-form">
+                    <div class="filter-form-btn"><input id="searchBtn" type="button" value="查询" /></div>
+                </div>
+            </div>
+
+            <div class="statistics">
+                <div class="statistics-all">
+                    <div class="statistics-item">
+                        <%
+                        if(type==0){
+                        %>
+                        <div class="statistics-total"><%= total==null?"0.00":parseFloat(total).toFixed(2) %></div>
+                        <div class="statistics-text"><%= title %>销售总额(元)</div>
+                        <%
+                        }else if(type==1){
+                        %>
+                        <div class="statistics-total"><%= total==null?"0":total %></div>
+                        <div class="statistics-text"><%= title %>销售总量(件)</div>
+                        <%
+                        }else if(type==2){
+                        %>
+                        <div class="statistics-total"><%= total==null?"0.00":parseFloat(total).toFixed(2) %></div>
+                        <div class="statistics-text"><%= title %>采购总额(元)</div>
+                        <%
+                        }else{
+                        %>
+                        <div class="statistics-total"><%= total==null?"0":total %></div>
+                        <div class="statistics-text"><%= title %>采购总量(件)</div>
+                        <%}%>
+                    </div>
+                    <div class="statistics-legend" id="container-1"></div>
+                </div>
+
+                <%
+                    if(sortList.length>0){
+                %>
+                <div class="statistics-classify">
+                    <div class="statistics-classify-tab">
+                        <div class="s-c-t-title">查看各分类情况：</div>
+                        <div class="s-c-t-list">
+                        <%
+                        sortList.forEach(function(item){
+                        %>
+                            <span><%= item.Sort_Name %></span>
+                        <%
+                        });
+                        %>
+                        </div>
+                    </div>
+                    <div class="statistics-classify-legend">
+                    <%
+                    var tempIndex=0;
+                    sortList.forEach(function(item){
+                    %>
+                        <div class="s-c-l-item" id="subCanva-<%= tempIndex %>"></div>
+                    <%
+                        tempIndex++;
+                    });
+                    %>
+                    </div>
+                </div>
+                <%
+                    }
+                %>
+            </div>
+        </div>
+        <script type="text/javascript">
+            $(function () {
+                var yearSelector=$("#searchYear");
+                var monthSelector=$("#searchMonth");
+                var dateSelector=$("#searchDate");
+                dateselector(yearSelector,monthSelector,dateSelector);
+
+                var time=new Date();
+                //var strTime=(parseInt(time.getMonth()+1))+"月"+time.getDate()+"日销售额";
+                var dataObjList=<%- canvaDataAll %>;
+                var classifyDataObjList=<%- canvaDataClassify %>;
+                Highcharts.chart('container-1', {
+                    chart: {
+                        backgroundColor: '#f0f6ff',
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false,
+                        type: 'pie'
+                    },
+                    title: {
+                        <%
+                        if(type==0){
+                        %>
+                        text: '<%= title %>销售总额分类占比'
+                        <%
+                        }else if(type==1){
+                        %>
+                        text: '<%= title %>销售总量分类占比'
+                        <%
+                        }else if(type==2){
+                        %>
+                        text: '<%= title %>采购总额分类占比'
+                        <%
+                        }else{
+                        %>
+                        text: '<%= title %>采购总量分类占比'
+                        <%}%>
+                    },
+                    tooltip: {
+                        <%
+                        if(type==0||type==2){
+                        %>
+                        pointFormat: '{series.name}: {point.y:.2f} 元 - <b>{point.percentage:.1f}%</b>'
+                        <%
+                        }else{
+                        %>
+                        pointFormat: '{series.name}: {point.y} 件 - <b>{point.percentage:.1f}%</b>'
+                        <% } %>
+                    },
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: false,
+                            cursor: 'pointer',
+                            dataLabels: {
+                                enabled: true,
+                                <%
+                                if(type==0||type==2){
+                                %>
+                                format: '<b>{point.name}</b>: {point.y:.2f}元 - {point.percentage:.1f} %',
+                                <%
+                                }else{
+                                %>
+                                format: '<b>{point.name}</b>: {point.y}件 - {point.percentage:.1f} %',
+                                <% } %>
+                                style: {
+                                    color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                                }
+                            }
+                        }
+                    },
+                    series: [{
+                        name: '<%= type==0||type==2?"总额":"总量" %>',
+                        colorByPoint: true,
+                        /*
+                        data: [{
+                            name: 'Chrome',
+                            description: 'a',
+                            y: 0
+                            sliced: true,
+                            selected: true
+                        }, {
+                            name: 'Internet Explorer',
+                            description: 'b',
+                            y: 0
+                        }, {
+                            name: 'Firefox',
+                            description: 'c',
+                            y: 398.1
+                        }]
+                        */
+                       data:dataObjList
+                    }]
+                });
+                
+                if($(".statistics-classify").length>0){
+                    var _index=0;
+                    var _subTab=$(".s-c-t-list span");
+                    var _subCanva=$(".s-c-l-item");
+                    _subCanva.each(function(){
+                        Highcharts.chart('subCanva-'+_index,{
+                            chart: {
+                                backgroundColor: '#f0f6ff',
+                                plotBackgroundColor: null,
+                                plotBorderWidth: null,
+                                plotShadow: false,
+                                type: 'pie'
+                            },
+                            title: {
+                                text: dataObjList[_index].name+"<%= type==0||type==2?'总额':'总量' %>分类占比"
+                            },
+                            tooltip: {
+                                <%
+                                if(type==0||type==2){
+                                %>
+                                pointFormat: '{series.name}: {point.y:.2f} 元 - <b>{point.percentage:.1f}%</b>'
+                                <%
+                                }else{
+                                %>
+                                pointFormat: '{series.name}: {point.y} 件 - <b>{point.percentage:.1f}%</b>'
+                                <% } %>
+                            },
+                            plotOptions: {
+                                pie: {
+                                    allowPointSelect: false,
+                                    cursor: 'pointer',
+                                    dataLabels: {
+                                        enabled: true,
+                                        <%
+                                        if(type==0||type==2){
+                                        %>
+                                        format: '<b>{point.name}</b>: {point.y:.2f}元 - {point.percentage:.1f} %',
+                                        <%
+                                        }else{
+                                        %>
+                                        format: '<b>{point.name}</b>: {point.y}件 - {point.percentage:.1f} %',
+                                        <% } %>
+                                        style: {
+                                            color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                                        }
+                                    }
+                                }
+                            },
+                            series: [{
+                                name: '<%= type==0||type==2?"总额":"总量" %>',
+                                colorByPoint: true,
+                                data:classifyDataObjList[_index]
+                            }]
+                        });
+                        _index++;
+                    });
+                    
+                    _subTab.click(function(){
+                        var clickIndex=_subTab.index($(this));
+                        _subTab.removeClass("sel");
+                        $(this).addClass("sel");
+                        _subCanva.filter(":visible").hide();
+                        _subCanva.eq(clickIndex).show();
+                    });
+                }
+                
+                $("#searchBtn").click(function(){
+                    if(yearSelector.val()!=""){
+                        <%
+                        if(type==0){
+                        %>
+                        var pathName="/statistics/salesstatistics.html";
+                        <%
+                        }else if(type==1){
+                        %>
+                        var pathName="/statistics/salecountstatistics.html";
+                        <%
+                        }else if(type==2){
+                        %>
+                        var pathName="/statistics/stockstatistics.html";
+                        <%
+                        }else{
+                        %>
+                        var pathName="/statistics/stockcountstatistics.html";
+                        <% } %>
+                        var url=pathName+"?year="+yearSelector.val();
+                        if(monthSelector.val()!=""){
+                            url+="&month="+monthSelector.val();
+                            if(dateSelector.val()!="") url+="&date="+dateSelector.val();
+                        }
+                        window.location=url;
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>
