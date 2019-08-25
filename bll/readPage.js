@@ -1,9 +1,12 @@
 var sql=require("mssql");
 var urls=require("url");
 var querystring=require("querystring");
+var bcrypt=require("bcrypt");
+var user=require("./user.js");
 var pageNumber=require("./pageNumberControl.js");
 var statisticsArgument=require("./statisticsArgument.js");
 var errorObj=require("./error.js");
+var cookieCheck=require("./cookieCheck.js");
 var strUrl;
 /*
 var config={
@@ -17,11 +20,14 @@ var config={
 }
 */
 var config=require("./config.js");
+var userIp="";
+var uid="";
+var userCookie;
 module.exports = function (app, url) {
     var pool=new sql.ConnectionPool(config.dbConfig);
-    //app.use(cookieParser("wyz_87"));
 
     app.get("/", function (req, res) {
+        /*
         if(req.signedCookies.bwf){
             if(req.signedCookies.bwf=="OKYAKUSAN") console.log(req.signedCookies);
             else console.log("cookie被篡改");
@@ -29,13 +35,169 @@ module.exports = function (app, url) {
             res.cookie("bwf","OKYAKUSAN",{signed:true});
             console.log("创建cookie");
         }
+        */
+        //console.log(req.ip);
+        //userCookie=req.signedCookies;
+        /*
+        if(cookieCheck.checkUserId(req)&&cookieCheck.checkLogin(req)){
+            res.sendFile(url + "/web" + "/index.html");
+        }else{
+            res.render(url + "/web" + "/login.ejs",{login:false,loginFailed:false});
+        }
+        */
+        /*
+        bcrypt.hash("wyz1987",config.bcrypt.saltRound,function(err,hash){
+            console.log(hash);
+        });
+        */
+        /*
+        bcrypt.compare("wyz1987",config.user.pwd,function(err,res){
+            console.log(res);    
+        });
+        console.log("1");
+        */
+        //console.log("请求/");
         res.sendFile(url + "/web" + "/index.html");
     });
+    
+    app.get("/login.html",function(req,res){
+        //console.log("请求login.html");
+        if(cookieCheck.checkUserId(req)&&cookieCheck.checkLogin(req)){
+            //console.log("进入if语句");
+            req.session.userName=req.signedCookies.user_id;
+            res.render(url + "/web" + "/login.ejs",{login:true,loginFailed:false});
+        }else {
+            //console.log("进入else语句");
+            res.render(url + "/web" + "/login.ejs",{login:false,loginFailed:false});
+        }
+    });
+    app.post("/login.html",function(req,res){
+        //console.log("post /login.html");
+        var dataPost="";
+        req.on("data",function(chunk){
+            dataPost+=chunk;
+        });
+        req.on("end",function(){
+            var dataObj=querystring.parse(dataPost);
+            //var uid=config.user.id;
+            //console.log(user.login(dataObj.userId,dataObj.userPwd));
+            //var loginResult=user.login(dataObj.userId,dataObj.userPwd);
+            //console.log(loginResult);
+            /*
+            if(loginResult){
+                res.cookie("user_id",dataObj.userId,{
+                    httpOnly:true,
+                    signed:true,
+                    maxAge:1000 * 60 * 60 * 24 * 2
+                });
+                res.cookie("login",1,{
+                    httpOnly:true,
+                    signed:true,
+                    maxAge:1000 * 60 * 60 * 24 * 2
+                });
+                console.log("before set session:"+req.session.userName);
+                req.session.userName=dataObj.userId;
+                console.log("after set session:"+req.session.userName);
+                res.render(url+"/web/login.ejs",{login:true,loginFailed:false});
+            }else{
+                res.render(url+"/web/login.ejs",{login:false,loginFailed:true});
+            }
+            */
+            user.login(dataObj.userId,dataObj.userPwd).then(function(loginResult){
+                if(loginResult){
+                    res.cookie("user_id",dataObj.userId,{
+                        httpOnly:true,
+                        signed:true,
+                        maxAge:1000 * 60 * 60 * 24 * 2
+                    });
+                    res.cookie("login",1,{
+                        httpOnly:true,
+                        signed:true,
+                        maxAge:1000 * 60 * 60 * 24 * 2
+                    });
+                    //console.log("before set session:"+req.session.userName);
+                    req.session.userName=dataObj.userId;
+                    //console.log("after set session:"+req.session.userName);
+                    res.render(url+"/web/login.ejs",{login:true,loginFailed:false});
+                }else{
+                    res.render(url+"/web/login.ejs",{login:false,loginFailed:true});
+                }
+            });
+        });
+    });
+
+    /*
+    app.get("/register.html",function(req,res){
+        res.render(url+"/web/register.ejs",{success:false,msg:""});
+    });
+    app.post("/register.html",function(req,res){
+        var dataPost="";
+        req.on("data",function(chunk){
+            dataPost+=chunk;
+        });
+        req.on("end",function(){
+            var dataObj=querystring.parse(dataPost);
+            pool.connect().then(function(sqlPool){
+                var sqlRequest=sqlPool.request();
+                sqlRequest.input("usersAccount",sql.NVarChar,dataObj.userId);
+            });
+        });
+    });
+    */
+    app.get("/account/member.html",function(req,res){
+        var strUrl=urls.parse(req.url).query;
+        var page=strUrl==null?1:querystring.parse(strUrl)["page"];
+        page=(isNaN(page)||page<=0)?1:page;
+        var tag=strUrl==null?-1:querystring.parse(strUrl)["tag"];
+        var maxTag=0;
+        pool.connect().then(function(sqlPool){
+            return sqlPool.request().query('select * from UsersGroup order by UsersGroup_Level desc');
+        }).then(function(result){
+            if(result.rowsAffected[0]>0) maxTag=result.recordset[0].UsersGroup_Level;
+            tag=(isNaN(tag)||tag<0||tag>maxTag)?-1:tag;
+            pool.close();
+            pool.connect().then(function(sqlPool){
+                var sqlRequest=sqlPool.request();
+                if(tag==-1) return sqlRequest.query('select u.Users_Id,u.Users_Account,ug.UsersGroup_Name,ug.UsersGroup_Level from Users as u,UsersGroup as ug where u.Users_Group=ug.UsersGroup_Id order by u.Users_Id desc');
+                else{
+                    sqlRequest.input("usersGroupLevel",sql.Int,tag);
+                    return sqlRequest.query('select u.Users_Id,u.Users_Account,ug.UsersGroup_Name,ug.UsersGroup_Level from Users as u,UsersGroup as ug where u.Users_Group=ug.UsersGroup_Id and ug.UsersGroup_Level=@usersGroupLevel order by u.Users_Id desc')
+                }
+            }).then(function(_result){
+                var dataObj=_result.recordset;
+                var count=_result.rowsAffected[0];
+                var reqUrl=urls.parse(req.url).pathname;
+                var viewCount=15;
+                var viewList=pageNumber.pickList(dataObj,page,viewCount);
+                var numHtml=tag==-1?pageNumber.numberList(count,page,viewCount,reqUrl):pageNumber.numberList(count,page,viewCount,reqUrl,{tag:tag});
+                res.render(url+"/web/account/member.ejs",{data:viewList,numControl:numHtml});
+                pool.close();
+            }).catch(function(err){
+                errorObj.error(err,req.url);
+                pool.close();
+            });
+        }).catch(function(err){
+            errorObj.error(err,req.url);
+            pool.close();
+        });
+        /*
+        user.getLevel(req.session.userName).then(function(level){
+            pool.connect().then(function(sqlPool){
+                var sqlRequest=sqlpool.request();
+                sqlRequest.input("")
+            });
+        });
+        */
+    });
+    
     app.get("/frame/top.html", function (req, res) {
         res.sendFile(url + "/web" + "/frame/top.html");
     });
     app.get("/frame/left.html", function (req, res) {
-        res.sendFile(url + "/web" + "/frame/left.html");
+        //res.sendFile(url + "/web" + "/frame/left.html");
+        user.getLevel(req.session.userName).then(function(level){
+            res.render(url+"/web/frame/left.ejs",{usersLevel:level});
+        });
     });
     app.get("/frame/bottom.html", function (req, res) {
         res.sendFile(url + "/web" + "/frame/bottom.html");

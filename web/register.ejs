@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <link type="text/css" rel="stylesheet" href="/static/css/admin_master.css" />
+        <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+        <title>注册 - ZZ测试框架</title>
+    </head>
+    <body class="login">
+        <form action="/register.html" method="post">
+            <div class="login-layout">
+                <div class="login-header">ZZ测试框架后台 - 注册</div>
+                <div class="login-textBox"><input type="text" id="userId" name="userId" placeholder="请输入账号" /></div>
+                <div class="login-textBox"><input type="password" id="userPwd" name="userPwd" placeholder="请输入密码" /></div>
+                <div class="login-btn"><input type="submit" value="提交" /></div>
+                <% if(!success){ %>
+                <div class="login-msg"><%= msg %></div>
+                <% } %>
+            </div>
+            <script type="text/javascript">
+                $(function(){
+                    var box=$(".login-layout");
+                    var boxWidth=box.outerWidth();
+                    var boxHeight=box.outerHeight();
+                    var win=$(window);
+                    var winWidth=win.outerWidth();
+                    var winHeight=win.outerHeight();
+                    var left=(winWidth-boxWidth)/2;
+                    var top=(winHeight-boxHeight)/2;
+                    box.css({"left":left+"px","top":top+"px"});
+                    win.resize(function(){
+                        winWidth=win.outerWidth();
+                        winHeight=win.outerHeight();
+                        left=(winWidth-boxWidth)/2;
+                        top=(winHeight-boxHeight)/2;
+                        box.css({"left":left+"px","top":top+"px"});
+                    });
+                    //if(parent.length!=0) parent.location.href="/login.html";
+                    <% if(success){ %>
+                    window.location = "/login.html";
+                    <% } %>
+                });
+            </script>
+        </form>
+    </body>
+</html>

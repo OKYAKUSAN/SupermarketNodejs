@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <link type="text/css" rel="stylesheet" href="/static/css/admin_master.css" />
+        <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+        <title></title>
+    </head>
+    <body style=" background-color:#eef1f8;">
+        <form id="form1">
+        <div class="leftNav">
+            <ul>
+                <li>
+                    <div class="leftNav-item">交易数据<span></span></div>
+                    <div class="leftNav-subNav">
+                        <a href="/transaction/salelist.html" target="rightFrame">销售管理</a>
+                        <a href="/Transaction/stocklist.html" target="rightFrame">进货管理</a>
+                    </div>
+                </li>
+                <li>
+                    <div class="leftNav-item">基础数据<span></span></div>
+                    <div class="leftNav-subNav">
+                        <a href="/basic/sortlist.html" target="rightFrame">分类管理</a>
+                        <a href="/basic/goodslist.html" target="rightFrame">商品管理</a>
+                    </div>
+                </li>
+                <li>
+                    <div class="leftNav-item">数据统计<span></span></div>
+                    <div class="leftNav-subNav">
+                        <a href="/statistics/salesstatistics.html" target="rightFrame">销售统计</a>
+                        <a href="/statistics/stockstatistics.html" target="rightFrame">进货统计</a>
+                    </div>
+                </li>
+                <li>
+                    <div class="leftNav-item">账户管理<span></span></div>
+                    <div class="leftNav-subNav">
+                        <% if(usersLevel!=-1&&usersLevel<=0) {%>
+                        <a href="/account/member.html" target="rightFrame">管理员管理</a>
+                        <% } %>
+                        <a href="#" target="rightFrame">修改密码</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <script type="text/javascript">
+            $(function () {
+                var listItem = $(".leftNav-item");
+                var clickIndex;
+                var currentIndex;
+                listItem.click(function () {
+                    clickIndex = listItem.index($(this));
+                    //console.log(listItem.filter(".sel").length);
+                    if (listItem.filter(".sel").length > 0) {
+                        //console.log("-1");
+                        currentIndex = listItem.index(listItem.filter(".sel"));
+                        if (clickIndex == currentIndex) {
+                            $(this).removeClass("sel");
+                            $(this).next().slideUp("fast");
+                        } else {
+                            listItem.filter(".sel").next().hide();
+                            listItem.filter(".sel").removeClass("sel");
+                            $(this).addClass("sel");
+                            $(this).next().slideDown("fast");
+                        }
+                    } else {
+                        $(this).addClass("sel");
+                        $(this).next().slideDown("fast");
+                    }
+                });
+    
+                var listSubItem = $(".leftNav-subNav a");
+                listSubItem.click(function () {
+                    listSubItem.filter(".sel").removeClass("sel");
+                    $(this).addClass("sel");
+                });
+            });
+        </script>
+        </form>
+    </body>
+</html>

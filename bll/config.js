@@ -8,6 +8,14 @@ module.exports={
     },
     user:{
         id:"OKYAKUSAN",
-        pwd:"wyz1987"
+        pwd:"$2b$12$Ew3VurNat.LFFllF3L8AZODZmfGhzxTw8GUy1qfKHrsyJ8uKMZhuy"
+    },
+    specialUrl:[
+        "/login.html",
+        "/favicon.ico",
+        "/register.html"
+    ],
+    bcrypt:{
+        saltRound:12
     }
 }

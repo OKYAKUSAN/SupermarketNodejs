@@ -18,9 +18,11 @@ table { width:100%; border-collapse:collapse; border-spacing:0;}
 .tl { text-align:left;}
 .tc { text-align:center;}
 .tr { text-align:right;}
+.bold { font-weight:bold;}
 
 .topFrame { width:100%; height:100px; background-color:#2a92db;}
 .topFrame img { height:100px;}
+.topFrame-info { position: absolute; right:0; top:75px; line-height: 25px; color:white;}
 .bottomFrame { width:100%; height:30px; background-color:#005a99; text-align:center; line-height:30px; color:White;}
 .leftNav { width:200px;}
 .leftNav li { width:200px;}
@@ -65,6 +67,16 @@ table { width:100%; border-collapse:collapse; border-spacing:0;}
 .pageNum a:hover, .pageNum a:active { background-color:#e9eeff; color:Red;}
 .pageNum a.sel:link, .pageNum a.sel:visited, .pageNum a.sel:hover, .pageNum a.sel:active { border:none 0; padding:0; background-color:transparent; font-weight:bold; line-height:22px; color:Red;}
 .pageNum span { float:left; margin-left:5px; line-height:22px;}
+
+/*=== login ===*/
+.login {background-color:#2a92db;}
+.login-layout { position:fixed; left:middle; top:middle; border:solid 3px #005a99; border-radius:10px; -moz-border-radius:10px; -webkit-border-radius:10px; width: 350px; height: 270px; background-color:#d5e6fd;}
+.login-header { margin-top:20px; font-size:24px; font-weight:bold; text-align: center; line-height: 40px;}
+.login-textBox { margin:20px auto 0; width: 200px; height: 30px;}
+.login-textBox input { float:left; border:solid 1px #7fcaff; border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px; padding: 0 5px; width: 188px; height: 28px;}
+.login-msg { position:absolute; top:170px; width:350px; height:20px; text-align: center; line-height: 20px; color:red;}
+.login-btn { margin:40px auto 0; width:200px; height:30px;}
+.login-btn input { float:left; border:solid 1px #7fcaff; border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px; width:200px; height:30px; background-color:#ddebff;}
 
 /*=== home ===*/
 .homeTable table { width:100%; border-collapse:collapse; border-spacing:0;}
